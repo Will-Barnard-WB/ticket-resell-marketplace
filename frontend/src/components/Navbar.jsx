@@ -37,7 +37,7 @@ const Navbar = () => {
 							className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out relative'
 						>
 							<span className='mr-2'>🛒</span>
-							<span>Your Cart</span>
+							<span>Cart</span>
 							{cart.length > 0 && (
 								<span className='absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full px-2 py-0.5 text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out'>
 									{cart.length}
