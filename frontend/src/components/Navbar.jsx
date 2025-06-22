@@ -11,7 +11,7 @@ const Navbar = () => {
 	return (
 		<header className='fixed top-0 left-0 w-full bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-emerald-800'>
 			<div className='w-full px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2'>
-				{/* Centered Title on Mobile */}
+				{/* Title */}
 				<Link
 					to='/'
 					className='text-2xl font-bold text-emerald-400 text-center sm:text-left'
@@ -19,9 +19,9 @@ const Navbar = () => {
 					Bath Ticket Resale
 				</Link>
 
-				{/* Navigation */}
+				{/* Nav */}
 				<nav className='flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-4'>
-					{/* HOME BUTTON WITH STYLE & EMOJI */}
+					{/* HOME — BOXED with emoji */}
 					<Link
 						to={"/"}
 						className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out'
@@ -30,7 +30,6 @@ const Navbar = () => {
 						Home
 					</Link>
 
-					{/* Cart */}
 					{user && (
 						<Link
 							to={"/cart"}
@@ -46,7 +45,6 @@ const Navbar = () => {
 						</Link>
 					)}
 
-					{/* Admin Dashboard */}
 					{isAdmin && (
 						<Link
 							className='bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded-md font-medium transition duration-300 ease-in-out flex items-center'
@@ -57,7 +55,6 @@ const Navbar = () => {
 						</Link>
 					)}
 
-					{/* Auth Buttons */}
 					{user ? (
 						<button
 							className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out'
