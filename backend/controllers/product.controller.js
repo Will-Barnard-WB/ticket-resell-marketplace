@@ -32,6 +32,11 @@ export const createProduct = async (req, res) => {
     try {
         const {name, description, price, image, category, isFeatured} = req.body;
         
+        const sellerId = req.user?._id;
+        if (!sellerId){
+            return res.status(401).json({ message: "Unauthorized: Seller not identified" });
+        }
+
         let cloudinaryResponse = null;
 
         if (image) {
@@ -43,7 +48,10 @@ export const createProduct = async (req, res) => {
             description,
             price,
             image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : "",
-            category
+            category,
+            isFeatured: isFeatured || false,
+            sellerId,
+            buyerId: null
         })
 
         res.status(201).json(product);

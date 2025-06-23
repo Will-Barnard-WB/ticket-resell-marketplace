@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const productSchema = new mongoose.Schema(
 	{
@@ -27,6 +27,16 @@ const productSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		sellerId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
+		buyerId: {
+			type: Mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			default: null
+		}
 	},
 	{ timestamps: true }
 );
