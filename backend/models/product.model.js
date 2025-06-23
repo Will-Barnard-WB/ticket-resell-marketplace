@@ -33,7 +33,7 @@ const productSchema = new mongoose.Schema(
 			required: true,
 		},
 		buyerId: {
-			type: Mongoose.Schema.Types.ObjectId,
+			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			default: null
 		}
