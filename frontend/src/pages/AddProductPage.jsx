@@ -22,7 +22,12 @@ const AddProductPage = () => {
 		fetchAllProducts();
 	}, [fetchAllProducts]);
 
-	const myProducts = products.filter((product) => product.sellerId.toString() === user?.id);
+	products.forEach((p, i) => {
+		if (!p.sellerId) {
+			console.warn(`Missing sellerId on product[${i}]:`, p);
+		}
+	});
+	const myProducts = products.filter((product) => product?.sellerId?.toString() === user?._id?.toString());
 
 	return (
 		<div className='min-h-screen relative overflow-hidden'>
