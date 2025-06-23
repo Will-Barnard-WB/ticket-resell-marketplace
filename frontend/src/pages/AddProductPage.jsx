@@ -22,7 +22,7 @@ const AddProductPage = () => {
 		fetchAllProducts();
 	}, [fetchAllProducts]);
 
-	const myProducts = products.filter((product) => product.userId === user?.id);
+	const myProducts = products.filter((product) => product.sellerId === user?.id);
 
 	return (
 		<div className='min-h-screen relative overflow-hidden'>
