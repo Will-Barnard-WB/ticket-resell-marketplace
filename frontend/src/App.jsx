@@ -4,7 +4,7 @@ import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
-
+import AddProductPage from "./pages/AddProductPage";
 import CategoryPage from "./pages/CategoryPage";
 
 import Navbar from "./components/Navbar";
@@ -54,7 +54,7 @@ function App() {
 						<Route
 							path='/add-product'
 							element={user ? <AddProductPage /> : <Navigate to='/login' />}
-						/>
+					/>
 						<Route path='/category/:category' element={<CategoryPage />} />
 						<Route path='/cart' element={user ? <CartPage /> : <Navigate to='/login' />} />
 						<Route
