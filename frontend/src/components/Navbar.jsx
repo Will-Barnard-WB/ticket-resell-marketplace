@@ -1,4 +1,4 @@
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
 import { useCartStore } from "../stores/useCartStore";
@@ -21,16 +21,28 @@ const Navbar = () => {
 
 				{/* Navigation */}
 				<nav className='flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-4'>
-					{/* Home Button */}
-					<Link
-						to={"/"}
-						className='bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out'
-					>
-						<span className='mr-2'>🏠</span>
-						Home
-					</Link>
+					{/* Dashboard for Admin OR Add Product for Customer */}
+					{user && isAdmin && (
+						<Link
+							to={"/secret-dashboard"}
+							className='bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-md flex items-center transition duration-300 ease-in-out'
+						>
+							<Lock className='mr-2' size={18} />
+							Dashboard
+						</Link>
+					)}
 
-					{/* Cart Button */}
+					{user && !isAdmin && (
+						<Link
+							to={"/add-product"}
+							className='bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md flex items-center transition duration-300 ease-in-out'
+						>
+							<PlusCircle className='mr-2' size={18} />
+							Add Product
+						</Link>
+					)}
+
+					{/* Cart */}
 					{user && (
 						<Link
 							to={"/cart"}
@@ -43,17 +55,6 @@ const Navbar = () => {
 									{cart.length}
 								</span>
 							)}
-						</Link>
-					)}
-
-					{/* Admin Dashboard */}
-					{isAdmin && (
-						<Link
-							className='bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded-md font-medium transition duration-300 ease-in-out flex items-center'
-							to={"/secret-dashboard"}
-						>
-							<Lock className='inline-block mr-1' size={18} />
-							<span className='hidden sm:inline'>Dashboard</span>
 						</Link>
 					)}
 
