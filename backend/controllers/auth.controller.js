@@ -35,6 +35,11 @@ const setCookies = (res, accessToken, refreshToken) => {
 
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
+
+	if (!email.endsWith('@bath.ac.uk')) {
+		return res.status(400).json({ message: 'Email must end with @bath.ac.uk' });
+	}
+
 	try {
 		const userExists = await User.findOne({ email });
 
@@ -62,8 +67,14 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
+
 	try {
 		const { email, password } = req.body;
+
+		if (!email.endsWith('@bath.ac.uk')) {
+			return res.status(400).json({ message: 'Email must end with @bath.ac.uk' });
+		}
+
 		const user = await User.findOne({ email });
 
 		if (user && (await user.comparePassword(password))) {

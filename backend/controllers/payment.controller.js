@@ -14,18 +14,22 @@ export const createCheckoutSession = async (req, res) => {
 
 		const lineItems = products.map((product) => {
 			const amount = Math.round(product.price * 100); // stripe wants u to send in the format of cents
-			totalAmount += amount * product.quantity;
+			totalAmount += amount;
 
 			return {
 				price_data: {
 					currency: "gbp",
 					product_data: {
-						name: product.name,
+						description: product.description,
+						name: product.category + " Ticket",
 						images: [product.image],
+						metadata: {
+							productId: product._id.toString(),
+						}
 					},
 					unit_amount: amount,
 				},
-				quantity: product.quantity || 1,
+				quantity: 1,
 			};
 		});
 
@@ -56,7 +60,7 @@ export const createCheckoutSession = async (req, res) => {
 				products: JSON.stringify(
 					products.map((p) => ({
 						id: p._id,
-						quantity: p.quantity,
+						quantity: 1,
 						price: p.price,
 					}))
 				),
@@ -97,7 +101,7 @@ export const checkoutSuccess = async (req, res) => {
 				user: session.metadata.userId,
 				products: products.map((product) => ({
 					product: product.id,
-					quantity: product.quantity,
+					quantity: 1,
 					price: product.price,
 				})),
 				totalAmount: session.amount_total / 100, // convert from cents to dollars,

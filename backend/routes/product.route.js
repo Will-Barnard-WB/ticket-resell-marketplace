@@ -3,21 +3,15 @@ import {
 	createProduct,
 	deleteProduct,
 	getAllProducts,
-	getFeaturedProducts,
 	getProductsByCategory,
-	getRecommendedProducts,
-	toggleFeaturedProduct,
 } from "../controllers/product.controller.js";
 import { adminRoute, protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 router.get("/", protectRoute, getAllProducts); // removed admin here
-router.get("/featured", getFeaturedProducts);
 router.get("/category/:category", getProductsByCategory);
-router.get("/recommendations", getRecommendedProducts);
 router.post("/", protectRoute, createProduct); // removed admin perms
-router.patch("/:id", protectRoute, adminRoute, toggleFeaturedProduct);
 router.delete("/:id", protectRoute, adminRoute, deleteProduct);
 
 export default router;

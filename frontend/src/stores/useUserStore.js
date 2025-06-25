@@ -10,6 +10,11 @@ export const useUserStore = create((set, get) => ({
 	signup: async ({ name, email, password, confirmPassword }) => {
 		set({ loading: true });
 
+		if (!email.endsWith("@bath.ac.uk")) {
+			set({ loading: false});
+			return toast.error("Email must end with @bath.ac.uk");
+		}
+
 		if (password !== confirmPassword) {
 			set({ loading: false });
 			return toast.error("Passwords do not match");
@@ -25,6 +30,11 @@ export const useUserStore = create((set, get) => ({
 	},
 	login: async (email, password) => {
 		set({ loading: true });
+
+		if (!email.endsWith("@bath.ac.uk")) {
+			set({ loading: false});
+			return toast.error("Email must end with @bath.ac.uk");
+		}
 
 		try {
 			const res = await axios.post("/auth/login", { email, password });

@@ -3,15 +3,15 @@ import { motion } from "framer-motion";
 import { PlusCircle, Upload, Loader } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
 
-const categories = ["Second-Bridges", "Labyrinth", "Komedia", "Other"];
+const categories = ["Second-Bridge", "Labyrinth", "Komedia", "Other"];
 
 const CreateProductForm = () => {
 	const [newProduct, setNewProduct] = useState({
-		name: "",
 		description: "",
 		price: "",
 		category: "",
 		image: "",
+		eventDate: ""
 	});
 
 	const { createProduct, loading } = useProductStore();
@@ -20,7 +20,7 @@ const CreateProductForm = () => {
 		e.preventDefault();
 		try {
 			await createProduct(newProduct);
-			setNewProduct({ name: "", description: "", price: "", category: "", image: "" });
+			setNewProduct({ description: "", price: "", category: "", image: "", eventDate: ""});
 		} catch {
 			console.log("error creating a product");
 		}
@@ -49,22 +49,7 @@ const CreateProductForm = () => {
 			<h2 className='text-2xl font-semibold mb-6 text-emerald-300'>Create New Product</h2>
 
 			<form onSubmit={handleSubmit} className='space-y-4'>
-				<div>
-					<label htmlFor='name' className='block text-sm font-medium text-gray-300'>
-						Product Name
-					</label>
-					<input
-						type='text'
-						id='name'
-						name='name'
-						value={newProduct.name}
-						onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2
-						 px-3 text-white focus:outline-none focus:ring-2
-						focus:ring-emerald-500 focus:border-emerald-500'
-						required
-					/>
-				</div>
+				
 
 				<div>
 					<label htmlFor='description' className='block text-sm font-medium text-gray-300'>
@@ -79,6 +64,7 @@ const CreateProductForm = () => {
 						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm
 						 py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 
 						 focus:border-emerald-500'
+						placeholder="e.g. Entry before 11 PM. If 'Other' event, include event name and location."
 						required
 					/>
 				</div>
@@ -134,6 +120,22 @@ const CreateProductForm = () => {
 						Upload Image
 					</label>
 					{newProduct.image && <span className='ml-3 text-sm text-gray-400'>Image uploaded </span>}
+				</div>
+
+				<div>
+					<label htmlFor='eventDate' className='block text-sm font-medium text-gray-300'>
+						Event Date
+					</label>
+					<input
+						type='date'
+						id='eventDate'
+						name='eventDate'
+						value={newProduct.eventDate}
+						onChange={(e) => setNewProduct({ ...newProduct, eventDate: e.target.value })}
+						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3
+							text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'
+						required
+					/>
 				</div>
 
 				<button

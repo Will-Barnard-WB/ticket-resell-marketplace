@@ -67,7 +67,7 @@ const AddProductPage = () => {
 							<LoadingSpinner />
 						) : myProducts.length > 0 ? (
 							myProducts.map((product) => (
-								<ProductCard key={product.id} product={product} />
+								<ProductCard key={product._id} product={product} />
 							))
 						) : (
 							<p className='text-gray-400 text-center w-full col-span-full'>

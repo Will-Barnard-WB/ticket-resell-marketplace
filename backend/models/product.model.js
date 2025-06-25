@@ -2,10 +2,6 @@ import mongoose, { Mongoose } from "mongoose";
 
 const productSchema = new mongoose.Schema(
 	{
-		name: {
-			type: String,
-			required: true,
-		},
 		description: {
 			type: String,
 			required: true,
@@ -23,10 +19,6 @@ const productSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		isFeatured: {
-			type: Boolean,
-			default: false,
-		},
 		sellerId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
@@ -36,6 +28,10 @@ const productSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
 			default: null
+		},
+		eventDate: {
+			type: Date,
+			required: true
 		}
 	},
 	{ timestamps: true }

@@ -15,6 +15,7 @@ const LoginPage = () => {
 		login(email, password);
 	};
 
+
 	return (
 		<div className='flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
 			<motion.div
@@ -23,7 +24,7 @@ const LoginPage = () => {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.8 }}
 			>
-				<h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Create your account</h2>
+				<h2 className='mt-6 text-center text-3xl font-extrabold text-emerald-400'>Sign into your account</h2>
 			</motion.div>
 
 			<motion.div
@@ -52,7 +53,7 @@ const LoginPage = () => {
 									rounded-md shadow-sm
 									 placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
 									 focus:border-emerald-500 sm:text-sm'
-									placeholder='you@example.com'
+									placeholder='you@bath.ac.uk'
 								/>
 							</div>
 						</div>
