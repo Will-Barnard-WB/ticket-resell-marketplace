@@ -41,29 +41,40 @@ export const createProduct = async (req, res) => {
         res.status(500).json( {message: "Server error", error: error.message});
     }
 };
+export const deleteProduct = async (req, res) => {
+	try {
+		const product = await Product.findById(req.params.id);
 
-export const deleteProduct = async(req, res) => {
-    try{
-        const product = await Product.findById(req.params.id);
+		if (!product) {
+			return res.status(404).json({ message: "Product not found" });
+		}
 
-        if (!product){
-            return res.status(400).json({ message: "Product not found"});
-        }
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const eventDate = new Date(product.eventDate);
+		eventDate.setHours(0, 0, 0, 0);
 
-        if (product.image){
-            const publicId = product.image.split("/").pop().split(".")[0];
-            try{
-                await cloudinary.uploader.destroy(`products/${publicId}`);
-            } catch(error){
-            }
-        }
+		// Prevent deletion if product is sold or expired
+		if (product.buyerID || eventDate < today) {
+			return res.status(400).json({ message: "Cannot delete sold or expired product" });
+		}
 
-        await Product.findByIdAndDelete(req.params.id);
-        res.json( { message: "Product deleted successfully"})
-    } catch(error){
-        res.status(500).json( { message: "Server error", error : error.message});
-    }
-}
+		if (product.image) {
+			const publicId = product.image.split("/").pop().split(".")[0];
+			try {
+				await cloudinary.uploader.destroy(`products/${publicId}`);
+			} catch (error) {
+				// Optional: log error but don't block deletion
+				console.error("Cloudinary delete error:", error);
+			}
+		}
+
+		await Product.findByIdAndDelete(req.params.id);
+		res.json({ message: "Product deleted successfully" });
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
 
 export const getProductsByCategory = async (req, res) => {
     const category = req.params.category;

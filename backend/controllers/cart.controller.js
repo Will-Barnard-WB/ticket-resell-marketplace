@@ -2,9 +2,28 @@ import Product from "../models/product.model.js";
 
 export const getCartProducts = async (req, res) => {
 	try {
+
+		const currentDate = new Date();
+
 		const products = await Product.find({ _id: { $in: req.user.cartItems } });
 
-		const cartItems = products.map((product) => {
+		const availableProducts = products.filter((product) => new Date(product.eventDate) >= currentDate &&
+		!product.buyerID);
+
+		const availableProductIds = availableProducts.map(p => p._id.toString());
+
+		const originalCartIds = req.user.cartItems.map(id => id.toString());
+
+		const updatedCart = originalCartIds.filter(id =>
+			availableProductIds.includes(id)
+		);
+
+		if (updatedCart.length !== originalCartIds.length) {
+			req.user.cartItems = updatedCart;
+			await req.user.save();
+		}
+
+		const cartItems = availableProducts.map((product) => {
 			const item = req.user.cartItems.find((cartItem) => cartItem.id === product.id);
 			return { ...product.toJSON()};
 		});
