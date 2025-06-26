@@ -12,6 +12,6 @@ const router = express.Router();
 router.get("/", protectRoute, getAllProducts); // removed admin here
 router.get("/category/:category", getProductsByCategory);
 router.post("/", protectRoute, createProduct); // removed admin perms
-router.delete("/:id", protectRoute, adminRoute, deleteProduct);
+router.delete("/:id", protectRoute, deleteProduct);
 
 export default router;
