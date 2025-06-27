@@ -23,12 +23,18 @@ export const stripeOnBoard = async (req, res) => {
       await user.save();
     }
 
+	console.log("CLIENT_URL:", process.env.CLIENT_URL);
+	const clientUrl = process.env.CLIENT_URL || "https://ticket-resell-marketplace.onrender.com";
+
+
     const accountLink = await stripe.accountLinks.create({
       account: user.stripeAccountId,
-      refresh_url: `${process.env.CLIENT_URL}/onboarding/refresh`,
-      return_url: `${process.env.CLIENT_URL}/onboarding/return`,
+      refresh_url: `${clientUrl}/onboarding/refresh`,
+      return_url: `${clientUrl}/onboarding/return`,
       type: "account_onboarding",
     });
+
+
 
     res.status(200).json({ url: accountLink.url });
   } catch (err) {

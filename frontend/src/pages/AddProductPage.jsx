@@ -18,42 +18,48 @@ const AddProductPage = () => {
   const { fetchAllProducts, products, loading, deleteProduct } = useProductStore();
   const { user } = useUserStore();
 
+  // Fetch products once on mount
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
 
+  // Immediately check Stripe onboarding on page load
+  useEffect(() => {
+    const handleStripeOnboarding = async () => {
+      if (!user) return;
+
+      if (!user.stripeAccountId) {
+        setCheckingStripe(true);
+        try {
+          const res = await fetch("/api/payments/onboard", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await res.json();
+          if (data?.url) {
+            window.location.href = data.url; // Redirect immediately
+            return;
+          }
+        } catch (err) {
+          console.error("Stripe onboarding error:", err);
+          alert("There was a problem connecting to Stripe.");
+        } finally {
+          setCheckingStripe(false);
+        }
+      } else {
+        setActiveTab("create");
+      }
+    };
+
+    handleStripeOnboarding();
+  }, [user]);
+
   const myProducts = products.filter(
     (product) => product?.sellerId?.toString() === user?._id?.toString()
   );
-
-  const handleCreateTabClick = async () => {
-    if (!user) return;
-
-    // Check if user has a Stripe account ID
-    if (!user.stripeAccountId) {
-      setCheckingStripe(true);
-      try {
-        const res = await fetch("/api/payments/onboard", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await res.json();
-        if (data?.url) {
-          window.location.href = data.url; // Redirect to Stripe onboarding
-        }
-      } catch (err) {
-        console.error("Stripe onboarding error:", err);
-        alert("There was a problem connecting to Stripe.");
-      } finally {
-        setCheckingStripe(false);
-      }
-    } else {
-      setActiveTab("create");
-    }
-  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -70,7 +76,7 @@ const AddProductPage = () => {
         {/* Tabs */}
         <div className="flex justify-center mb-8">
           <button
-            onClick={handleCreateTabClick}
+            onClick={() => setActiveTab("create")}
             className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors duration-200 ${
               activeTab === "create"
                 ? "bg-emerald-600 text-white"
