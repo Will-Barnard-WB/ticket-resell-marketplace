@@ -227,7 +227,20 @@ export const checkoutSuccess = async (req, res) => {
 	}
   };
   
+  export const getStripeAccountStatus = async (req, res) => {
+	try {
+	  const user = await User.findById(req.user._id);
+	  if (!user?.stripeAccountId) {
+		return res.status(400).json({ error: "User not onboarded with Stripe" });
+	  }
   
+	  const account = await stripe.accounts.retrieve(user.stripeAccountId);
+	  res.status(200).json({ payoutsEnabled: account.payouts_enabled });
+	} catch (err) {
+	  console.error("Error checking Stripe account status:", err);
+	  res.status(500).json({ error: "Could not check Stripe account" });
+	}
+  };
 
 export const handleStripeWebhook = async (req, res) => {
 	const sig = req.headers["stripe-signature"];
