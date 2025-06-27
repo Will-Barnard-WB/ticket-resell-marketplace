@@ -18,12 +18,10 @@ const AddProductPage = () => {
   const { fetchAllProducts, products, loading, deleteProduct } = useProductStore();
   const { user } = useUserStore();
 
-  // Fetch products once on mount
   useEffect(() => {
     fetchAllProducts();
   }, [fetchAllProducts]);
 
-  // Immediately check Stripe onboarding on page load
   useEffect(() => {
     const handleStripeOnboarding = async () => {
       if (!user) return;
@@ -61,6 +59,15 @@ const AddProductPage = () => {
     (product) => product?.sellerId?.toString() === user?._id?.toString()
   );
 
+  // Show spinner overlay while checking Stripe
+  if (checkingStripe) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-16">
@@ -85,7 +92,7 @@ const AddProductPage = () => {
             disabled={checkingStripe}
           >
             <PlusCircle className="mr-2 h-5 w-5" />
-            {checkingStripe ? "Checking Stripe..." : "Create Product"}
+            Create Product
           </button>
 
           <button

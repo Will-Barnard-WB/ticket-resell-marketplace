@@ -18,6 +18,7 @@ export const stripeOnBoard = async (req, res) => {
       const account = await stripe.accounts.create({
         type: "express",
         email: user.email,
+		business_type: "individual",
       });
       user.stripeAccountId = account.id;
       await user.save();
