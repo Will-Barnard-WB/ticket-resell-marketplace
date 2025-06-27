@@ -33,7 +33,7 @@ const AddProductPage = () => {
     if (!user.stripeAccountId) {
       setCheckingStripe(true);
       try {
-        const res = await fetch("/api/stripe/onboard", {
+        const res = await fetch("/api/payments/onboard", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
