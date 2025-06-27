@@ -1,11 +1,19 @@
 
 import express from "express";
+import bodyParser from "body-parser";
+
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { checkoutSuccess, createCheckoutSession } from "../controllers/payment.controller.js";
+import { checkoutSuccess, createCheckoutSession, stripeOnBoard, getStripeAccountStatus, handleStripeWebhook} from "../controllers/payment.controller.js";
 
 const router = express.Router();
 
 router.post("/create-checkout-session", protectRoute, createCheckoutSession);
 router.post("/checkout-success", protectRoute, checkoutSuccess);
+
+router.post("/onboard", protectRoute, stripeOnboard);
+router.get("/account-status", protectRoute, getStripeAccountStatus);
+router.post("/webhook", bodyParser.raw({ type: 'application/json' }), handleStripeWebhook);
+
+
 
 export default router;

@@ -14,6 +14,7 @@ const tabs = [
 
 const AddProductPage = () => {
   const [activeTab, setActiveTab] = useState("create");
+  const [checkingStripe, setCheckingStripe] = useState(false);
   const { fetchAllProducts, products, loading, deleteProduct } = useProductStore();
   const { user } = useUserStore();
 
@@ -24,6 +25,35 @@ const AddProductPage = () => {
   const myProducts = products.filter(
     (product) => product?.sellerId?.toString() === user?._id?.toString()
   );
+
+  const handleCreateTabClick = async () => {
+    if (!user) return;
+
+    // Check if user has a Stripe account ID
+    if (!user.stripeAccountId) {
+      setCheckingStripe(true);
+      try {
+        const res = await fetch("/api/stripe/onboard", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await res.json();
+        if (data?.url) {
+          window.location.href = data.url; // Redirect to Stripe onboarding
+        }
+      } catch (err) {
+        console.error("Stripe onboarding error:", err);
+        alert("There was a problem connecting to Stripe.");
+      } finally {
+        setCheckingStripe(false);
+      }
+    } else {
+      setActiveTab("create");
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -39,25 +69,34 @@ const AddProductPage = () => {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? "bg-emerald-600 text-white"
-                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-              }`}
-            >
-              <tab.icon className="mr-2 h-5 w-5" />
-              {tab.label}
-            </button>
-          ))}
+          <button
+            onClick={handleCreateTabClick}
+            className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors duration-200 ${
+              activeTab === "create"
+                ? "bg-emerald-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+            }`}
+            disabled={checkingStripe}
+          >
+            <PlusCircle className="mr-2 h-5 w-5" />
+            {checkingStripe ? "Checking Stripe..." : "Create Product"}
+          </button>
+
+          <button
+            onClick={() => setActiveTab("my-products")}
+            className={`flex items-center px-4 py-2 mx-2 rounded-md transition-colors duration-200 ${
+              activeTab === "my-products"
+                ? "bg-emerald-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+            }`}
+          >
+            <ShoppingBasket className="mr-2 h-5 w-5" />
+            My Listings
+          </button>
         </div>
 
         {/* Tab Content */}
         {activeTab === "create" && <CreateProductForm />}
-
         {activeTab === "my-products" && (
           <motion.div
             className="space-y-4 max-w-2xl mx-auto"
@@ -75,11 +114,9 @@ const AddProductPage = () => {
               myProducts.map((product) => {
                 const eventDate = new Date(product.eventDate);
                 const today = new Date();
-                // Zero out time for date comparison
                 eventDate.setHours(0, 0, 0, 0);
                 today.setHours(0, 0, 0, 0);
 
-                // Determine status
                 let status = "Active";
                 if (product.buyerID) {
                   status = "Sold";
@@ -87,7 +124,6 @@ const AddProductPage = () => {
                   status = "Expired";
                 }
 
-                // Deletable if active and not sold
                 const deletable = status === "Active" && !product.buyerID;
 
                 return (
@@ -96,19 +132,17 @@ const AddProductPage = () => {
                     className="flex items-start bg-gray-800 rounded-xl p-4 shadow-md space-x-4"
                   >
                     <img
-                     src={`/categories/${product.category.toLowerCase()}.jpg`}
-					 alt={product.category}
-					 className="w-20 h-20 object-cover transition-transform duration-300 ease-in-out hover:scale-110"
+                      src={`/categories/${product.category.toLowerCase()}.jpg`}
+                      alt={product.category}
+                      className="w-20 h-20 object-cover transition-transform duration-300 ease-in-out hover:scale-110"
                     />
                     <div className="flex-1 space-y-1">
                       <p className="text-emerald-400 text-sm italic">{product.category}</p>
+                      <p className="text-emerald-400 text-sm">Price: £{product.price.toFixed(2)}</p>
                       <p className="text-emerald-400 text-sm">
-                        Price: £{product.price.toFixed(2)} 
+                        Event Date: {eventDate.toLocaleDateString()}
                       </p>
-					  <p className="text-emerald-400 text-sm">
-						Event Date:{" "} {eventDate.toLocaleDateString()}
-					  </p>
-					  <p className="text-white-300 text-sm">{product.description}</p>
+                      <p className="text-white-300 text-sm">{product.description}</p>
                       <p
                         className={`inline-block text-xs font-semibold px-2 py-1 rounded ${
                           status === "Active"
@@ -125,9 +159,7 @@ const AddProductPage = () => {
                       {deletable ? (
                         <button
                           onClick={() => {
-                            if (
-                              window.confirm("Are you sure you want to delete this product?")
-                            ) {
+                            if (window.confirm("Are you sure you want to delete this product?")) {
                               deleteProduct(product._id);
                             }
                           }}
