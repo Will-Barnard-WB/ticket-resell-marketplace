@@ -9,7 +9,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // ----------------------
 // 🔁 Stripe Seller Onboarding
 // ----------------------
-export const stripeOnboard = async (req, res) => {
+export const stripeOnBoard = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ error: "User not found" });
