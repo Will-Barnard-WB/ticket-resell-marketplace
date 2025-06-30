@@ -22,7 +22,7 @@ export const stripeOnBoard = async (req, res) => {
 		business_profile: {
 			name: "Bath Ticket Resale",
 			product_description: "Online creator sales via Your Marketplace",
-			url: "https://https://ticket-resell-marketplace.onrender.com"
+			url: "https://ticket-resell-marketplace.onrender.com"
 		  }
       });
       user.stripeAccountId = account.id;
