@@ -184,13 +184,8 @@ export const createCheckoutSession = async (req, res) => {
 // ✅ Handle Checkout Success
 // ----------------------
 export const checkoutSuccess = async (req, res) => {
+	
 	const { sessionId } = req.body;
-  
-	// ✅ First: check if sessionId exists before doing anything
-	if (!sessionId || typeof sessionId !== "string") {
-	  console.error("❌ Stripe sessionId is missing or invalid. Aborting.");
-	  return res.status(400).send("Missing or invalid Stripe session ID.");
-	}
   
 	try {
 	  // ✅ Only now retrieve the session
@@ -228,7 +223,7 @@ export const checkoutSuccess = async (req, res) => {
 		  price: products.find((p) => p.id === product._id.toString())?.price || 0,
 		})),
 		totalAmount: session.amount_total / 100,
-		stripeSessionId: session.id,
+		stripeSessionId: sessionId,
 	  });
   
 	  await newOrder.save();
