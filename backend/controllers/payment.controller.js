@@ -228,7 +228,7 @@ export const checkoutSuccess = async (req, res) => {
 		  price: products.find((p) => p.id === product._id.toString())?.price || 0,
 		})),
 		totalAmount: session.amount_total / 100,
-		stripeSessionId: sessionId,
+		stripeSessionId: session.id,
 	  });
   
 	  await newOrder.save();

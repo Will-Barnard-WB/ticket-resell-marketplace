@@ -14,6 +14,6 @@ router.post("/onboard", protectRoute, stripeOnBoard);
 router.get("/account-status", protectRoute, getStripeAccountStatus);
 router.post("/webhook", express.raw({ type: 'application/json' }), handleStripeWebhook);
 
-
+app.use(express.json());
 
 export default router;
