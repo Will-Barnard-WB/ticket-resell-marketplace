@@ -19,6 +19,11 @@ export const stripeOnBoard = async (req, res) => {
         type: "express",
         email: user.email,
 		business_type: "individual",
+		business_profile: {
+			name: "Bath Ticket Resale",
+			product_description: "Online creator sales via Your Marketplace",
+			url: "https://https://ticket-resell-marketplace.onrender.com"
+		  }
       });
       user.stripeAccountId = account.id;
       await user.save();
@@ -110,7 +115,7 @@ export const createCheckoutSession = async (req, res) => {
           product_data: {
             description: product.description,
             name: product.category + " Ticket",
-            images: [product.image],
+            images: [`/categories/${product.category.toLowerCase()}.jpg`],
             metadata: { productId: product._id.toString() },
           },
           unit_amount: amount,
@@ -175,62 +180,60 @@ export const createCheckoutSession = async (req, res) => {
 // ✅ Handle Checkout Success
 // ----------------------
 export const checkoutSuccess = async (req, res) => {
+	const { sessionId } = req.body;
+  
 	try {
-	  const { sessionId } = req.body;
-	  const session = await stripe.checkout.sessions.retrieve(sessionId);
+	  // Retrieve session and expand line items
+	  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+		expand: ["line_items", "line_items.data.price.product"],
+	  });
   
-	  if (session.payment_status === "paid") {
-		if (session.metadata.couponCode) {
-		  await Coupon.findOneAndUpdate(
-			{
-			  code: session.metadata.couponCode,
-			  userId: session.metadata.userId,
-			},
-			{
-			  isActive: false,
-			}
-		  );
-		}
+	  const userId = session.metadata.userId;
   
-		const products = JSON.parse(session.metadata.products);
+	  const products = session.line_items.data.map((item) => {
+		const productId = item.price.product.id || item.price.product;
+		return {
+		  id: productId,
+		  price: item.amount_total / 100,
+		};
+	  });
   
-		// Fetch full product details including ticketImageUrl
-		const productDetails = await Promise.all(
-		  products.map(async (product) => {
-			const dbProduct = await Product.findById(product.id);
-			return {
-			  id: product.id,
-			  price: product.price,
-			  image: dbProduct?.image || null,
-			};
-		  })
-		);
+	  // Fetch full product details from your database
+	  const dbProducts = await Product.find({
+		_id: { $in: products.map((p) => p.id) },
+	  });
   
-		const newOrder = new Order({
-		  user: session.metadata.userId,
-		  products: products.map((product) => ({
-			product: product.id,
-			quantity: 1,
-			price: product.price,
-		  })),
-		  totalAmount: session.amount_total / 100,
-		  stripeSessionId: sessionId,
-		});
+	  // Update buyerId for each product
+	  await Promise.all(
+		dbProducts.map((product) =>
+		  Product.findByIdAndUpdate(product._id, { buyerId: userId })
+		)
+	  );
   
-		await newOrder.save();
+	  // Save the order
+	  const newOrder = new Order({
+		user: userId,
+		products: dbProducts.map((product) => ({
+		  product: product._id,
+		  quantity: 1,
+		  price: products.find((p) => p.id == product._id.toString())?.price || 0,
+		})),
+		totalAmount: session.amount_total / 100,
+		stripeSessionId: sessionId,
+	  });
   
-		res.status(200).json({
-		  success: true,
-		  message: "Payment successful, order created.",
-		  orderId: newOrder._id,
-		  products: productDetails, // Include ticket image URLs here
-		});
-	  } else {
-		res.status(400).json({ success: false, message: "Payment not completed" });
-	  }
+	  await newOrder.save();
+  
+	  // Use the first product's image as the ticket image
+	  const ticketImageUrl = dbProducts[0]?.image || null;
+  
+	  res.json({
+		ticketImageUrl,
+		orderNumber: newOrder._id,
+	  });
 	} catch (error) {
-	  console.error("Error processing successful checkout:", error);
-	  res.status(500).json({ message: "Error processing successful checkout", error: error.message });
+	  console.error("checkoutSuccess error:", error);
+	  res.status(500).json({ error: "Failed to process checkout success" });
 	}
   };
   
