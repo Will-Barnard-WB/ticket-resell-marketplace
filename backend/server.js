@@ -21,6 +21,12 @@ const PORT = process.env.PORT || 5001;
 
 const __dirname = path.resolve();
 
+app.use(
+	"/api/payments/webhook",
+	express.raw({ type: "application/json" }),
+	paymentRoutes
+  );
+
 app.use(express.json({ limit: "10mb" })); // allows you to parse the body of the request
 app.use(cookieParser());
 
