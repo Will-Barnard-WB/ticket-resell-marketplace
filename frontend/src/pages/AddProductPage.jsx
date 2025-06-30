@@ -131,6 +131,7 @@ const AddProductPage = () => {
                 today.setHours(0, 0, 0, 0);
 
                 let status = "Active";
+                console.log(product.buyerID)
                 if (product.buyerID) {
                   status = "Sold";
                 } else if (eventDate < today) {
