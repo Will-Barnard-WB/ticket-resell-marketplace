@@ -19,12 +19,14 @@ export const stripeOnBoard = async (req, res) => {
     if (!user.stripeAccountId) {
       const account = await stripe.accounts.create({
         type: "express",
+		country: "GB",
         email: user.email,
 		business_type: "individual",
 		business_profile: {
 			name: "Bath Ticket Resale",
 			product_description: "Online creator sales via Your Marketplace",
-			url: "https://ticket-resell-marketplace.onrender.com"
+			url: "https://ticket-resell-marketplace.onrender.com",
+			mcc: "7922"
 		  }
       });
       user.stripeAccountId = account.id;
