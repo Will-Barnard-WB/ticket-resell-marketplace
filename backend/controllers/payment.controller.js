@@ -1,4 +1,6 @@
 import Stripe from "stripe";
+import dotenv from "dotenv";
+
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
@@ -115,7 +117,7 @@ export const createCheckoutSession = async (req, res) => {
           product_data: {
             description: product.description,
             name: product.category + " Ticket",
-            images: [`${baseUrl}/categories/${product.category.toLowerCase()}.jpg`],
+            images: [`${process.env.CLIENT_URL}/categories/${product.category.toLowerCase()}.jpg`],
             metadata: { productId: product._id.toString() },
           },
           unit_amount: amount,
