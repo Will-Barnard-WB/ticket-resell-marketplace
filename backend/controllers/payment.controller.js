@@ -185,7 +185,7 @@ export const createCheckoutSession = async (req, res) => {
 // ----------------------
 export const checkoutSuccess = async (req, res) => {
 	
-	const { sessionId } = req.body;
+	const { sessionId } = req.body.sessionId;
   
 	try {
 	  // ✅ Only now retrieve the session
