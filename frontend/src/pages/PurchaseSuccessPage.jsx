@@ -10,7 +10,7 @@ const PurchaseSuccessPage = () => {
   useEffect(() => {
     const handleCheckoutSuccess = async (sessionId) => {
       try {
-        const res = await axios.post("/api/payments/checkout-success", {
+        const res = await axios.post("/payments/checkout-success", {
           sessionId,
         });
 
