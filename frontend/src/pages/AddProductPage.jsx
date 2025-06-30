@@ -131,14 +131,13 @@ const AddProductPage = () => {
                 today.setHours(0, 0, 0, 0);
 
                 let status = "Active";
-                console.log(product.buyerID)
-                if (product.buyerID) {
+                if (product.buyerId) {
                   status = "Sold";
                 } else if (eventDate < today) {
                   status = "Expired";
                 }
 
-                const deletable = status === "Active" && !product.buyerID;
+                const deletable = status === "Active" && !product.buyerId;
 
                 return (
                   <div
