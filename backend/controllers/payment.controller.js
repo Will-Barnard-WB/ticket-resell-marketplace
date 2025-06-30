@@ -115,7 +115,7 @@ export const createCheckoutSession = async (req, res) => {
           product_data: {
             description: product.description,
             name: product.category + " Ticket",
-            images: [`/categories/${product.category.toLowerCase()}.jpg`],
+            images: [`${baseUrl}/categories/${product.category.toLowerCase()}.jpg`],
             metadata: { productId: product._id.toString() },
           },
           unit_amount: amount,
