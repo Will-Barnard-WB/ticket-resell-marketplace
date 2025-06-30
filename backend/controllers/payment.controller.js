@@ -186,42 +186,40 @@ export const createCheckoutSession = async (req, res) => {
 export const checkoutSuccess = async (req, res) => {
 	const { sessionId } = req.body;
   
+	// ✅ First: check if sessionId exists before doing anything
+	if (!sessionId || typeof sessionId !== "string") {
+	  console.error("❌ Stripe sessionId is missing or invalid. Aborting.");
+	  return res.status(400).send("Missing or invalid Stripe session ID.");
+	}
+  
 	try {
-	  // Retrieve Stripe checkout session with expanded line items & product info
+	  // ✅ Only now retrieve the session
 	  const session = await stripe.checkout.sessions.retrieve(sessionId, {
 		expand: ["line_items", "line_items.data.price.product"],
 	  });
   
 	  const userId = session.metadata.userId;
   
-	  // Extract MongoDB product IDs and prices from Stripe session
 	  const products = session.line_items.data.map((item) => {
-		const stripeProduct = item.price.product; // expanded product object
-		const productId = stripeProduct.metadata.productId; // your MongoDB product _id stored in metadata
+		const stripeProduct = item.price.product;
+		const productId = stripeProduct.metadata.productId;
 		return {
 		  id: productId,
 		  price: item.amount_total / 100,
 		};
 	  });
   
-	  // Fetch full product details from your database using MongoDB IDs
 	  const dbProducts = await Product.find({
 		_id: { $in: products.map((p) => p.id) },
 	  });
   
-	  // Update buyerId for each product sold
 	  await Promise.all(
 		dbProducts.map((product) =>
 		  Product.findByIdAndUpdate(product._id, { buyerId: userId })
 		)
 	  );
-
-	  if (!sessionId) {
-		console.error("❌ Stripe sessionId is missing. Order not saved.");
-		return res.status(400).send("Missing Stripe session ID.");
-	  }
   
-	  // Save the order with products and stripeSessionId
+	  // ✅ Save the order (sessionId is guaranteed valid now)
 	  const newOrder = new Order({
 		user: userId,
 		products: dbProducts.map((product) => ({
@@ -235,7 +233,6 @@ export const checkoutSuccess = async (req, res) => {
   
 	  await newOrder.save();
   
-	  // Use first product's image URL as ticket image
 	  const ticketImageUrl = dbProducts[0]?.image || null;
   
 	  res.json({
@@ -246,7 +243,8 @@ export const checkoutSuccess = async (req, res) => {
 	  console.error("checkoutSuccess error:", error);
 	  res.status(500).json({ error: "Failed to process checkout success" });
 	}
-  };;
+  };
+  
   
   export const getStripeAccountStatus = async (req, res) => {
 	try {
