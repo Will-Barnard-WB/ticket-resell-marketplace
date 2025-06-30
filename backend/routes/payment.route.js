@@ -12,7 +12,7 @@ router.post("/checkout-success", protectRoute, checkoutSuccess);
 
 router.post("/onboard", protectRoute, stripeOnBoard);
 router.get("/account-status", protectRoute, getStripeAccountStatus);
-router.post("/webhook", bodyParser.raw({ type: 'application/json' }), handleStripeWebhook);
+router.post("/webhook", express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 
 

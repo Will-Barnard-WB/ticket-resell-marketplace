@@ -215,6 +215,11 @@ export const checkoutSuccess = async (req, res) => {
 		  Product.findByIdAndUpdate(product._id, { buyerId: userId })
 		)
 	  );
+
+	  if (!sessionId) {
+		console.error("❌ Stripe sessionId is missing. Order not saved.");
+		return res.status(400).send("Missing Stripe session ID.");
+	  }
   
 	  // Save the order with products and stripeSessionId
 	  const newOrder = new Order({
